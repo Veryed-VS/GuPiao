@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    //使用http
+    useLibrary 'org.apache.http.legacy'
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.xjm.gupiao"
+        minSdkVersion 17
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    //因为jackson-core和jackson-databind有重复的文件，重复加载会报错
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    //第三方对话框
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    //加载网络图片
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    //JSON解析
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.0.pr3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.0.pr3'
+    //消息传递
+    implementation 'org.greenrobot:eventbus:3.1.1'
+
+}
