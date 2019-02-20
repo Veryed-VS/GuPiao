@@ -41,6 +41,7 @@ public class AnalysisData {
         ArrayList<ResultBean> resultBeans = new ArrayList<>();
         if (httpEntity == null) {
             return resultBeans;
+
         }
         InputStream is = httpEntity.getContent();
         // 转换为字节输入流
