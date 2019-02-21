@@ -114,9 +114,9 @@ public class AnalysisData {
             EventBus.getDefault().post(new ProgressBean(arrayLength, i));
 
             //模式,代码,名称,当前价格,主力流入净占比,今日主力排行,今日涨幅,5日主力流入净占比,5日主力排行,5日涨幅,10日主力流入净占比,10日主力排行,10日涨幅,行业
-            String code = sharesStr[1];    //代码
-            String name = sharesStr[2];    //名称
-            String trade = sharesStr[13];  //行业
+            String code = sharesStr[1];       //代码
+            String name = sharesStr[2];       //名称
+            String trade = sharesStr[13];     //行业
             int ranking = Integer.valueOf(5); //今日主力排行
             int mode = Integer.valueOf(sharesStr[0].replace("\"", "")) - 1; //模式
 
@@ -138,6 +138,7 @@ public class AnalysisData {
             String[] line_data = buffer1.toString().split(",");
             //名称   开盘价   前收盘价   当前价格   最高价   最低价    未知   未知   成交量   成交额
             float open = Float.valueOf(line_data[1]);     // 开盘价
+            float old_open = Float.valueOf(line_data[2]); // 前收盘
             float close = Float.valueOf(line_data[3]);    // 当前价
             float height = Float.valueOf(line_data[4]);   // 最高价
             float low = Float.valueOf(line_data[5]);      // 最低价
@@ -166,7 +167,14 @@ public class AnalysisData {
                 if (isError) {
                     continue;
                 }
+
+                //可能盘后运行   不要第一行数据
+                if(Float.valueOf(line_item[3]) == currentPrice && number == Long.valueOf(line_item[10])){
+                    continue;
+                }
+
                 SharesBean bean = new SharesBean();
+                bean.setOpenPrice(Float.valueOf(line_item[6]));     // 开盘价
                 bean.setClosePrice(Float.valueOf(line_item[3]));    // 收盘价
                 bean.setNumber(Long.valueOf(line_item[10]));        // 成交量
                 bean.setWave(Float.valueOf(9));                     // 涨跌幅
@@ -211,46 +219,51 @@ public class AnalysisData {
 
             //找倒锤子形态
             if (currentWave < 3 && currentWave > -2) {
-                if (open < close) {  //涨
-                    if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
-                        if (currentPrice > maxPrice) {
-                            AllSharesBean allSharesBean = new AllSharesBean();
-                            allSharesBean.setCode(code);
-                            allSharesBean.setName(name);
-                            allSharesBean.setMode(mode);
-                            allSharesBean.setRanking(ranking);
-                            allSharesBean.setTrade(trade);
-                            cuiziList.add(allSharesBean);
+                //不可以跳空
+                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                    if (open < close) {  //涨
+                        if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
+                            if (currentPrice > maxPrice) {
+                                AllSharesBean allSharesBean = new AllSharesBean();
+                                allSharesBean.setCode(code);
+                                allSharesBean.setName(name);
+                                allSharesBean.setMode(mode);
+                                allSharesBean.setRanking(ranking);
+                                allSharesBean.setTrade(trade);
+                                cuiziList.add(allSharesBean);
+                            }
+                            continue;
                         }
-                        continue;
-                    }
-                } else {  //跌
-                    if (((height - close) >= 1.5 * (open - close)) && ((height - open) >= 1.5 * (close - low))) {
-                        if (currentPrice > maxPrice) {
-                            AllSharesBean allSharesBean = new AllSharesBean();
-                            allSharesBean.setCode(code);
-                            allSharesBean.setName(name);
-                            allSharesBean.setMode(mode);
-                            allSharesBean.setRanking(ranking);
-                            allSharesBean.setTrade(trade);
-                            cuiziList.add(allSharesBean);
+                    } else {  //跌
+                        if (((height - close) >= 1.5 * (open - close)) && ((height - open) >= 1.5 * (close - low))) {
+                            if (currentPrice > maxPrice) {
+                                AllSharesBean allSharesBean = new AllSharesBean();
+                                allSharesBean.setCode(code);
+                                allSharesBean.setName(name);
+                                allSharesBean.setMode(mode);
+                                allSharesBean.setRanking(ranking);
+                                allSharesBean.setTrade(trade);
+                                cuiziList.add(allSharesBean);
+                            }
+                            continue;
                         }
-                        continue;
                     }
                 }
             }
 
             //另一种倒锤子形态
             if (currentWave >= 1.5) {
-                if (((height - close) > 2 * (open - low)) && ((height - close) > (close - open))) {
-                    if (currentPrice > maxPrice) {
-                        AllSharesBean allSharesBean = new AllSharesBean();
-                        allSharesBean.setCode(code);
-                        allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
-                        allSharesBean.setRanking(ranking);
-                        allSharesBean.setTrade(trade);
-                        cuiziList.add(allSharesBean);
+                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                    if (((height - close) > 2 * (open - low)) && ((height - close) > (close - open))) {
+                        if (currentPrice > maxPrice) {
+                            AllSharesBean allSharesBean = new AllSharesBean();
+                            allSharesBean.setCode(code);
+                            allSharesBean.setName(name);
+                            allSharesBean.setMode(mode);
+                            allSharesBean.setRanking(ranking);
+                            allSharesBean.setTrade(trade);
+                            cuiziList.add(allSharesBean);
+                        }
                     }
                 }
             }
@@ -258,15 +271,17 @@ public class AnalysisData {
             float openCloseDiff = Math.abs(open - close);
             //小十字星
             if (currentWave > -2 && currentWave < 2) {
-                if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
-                        && (maxMinDiff / open) <= 0.05) {
-                    AllSharesBean allSharesBean = new AllSharesBean();
-                    allSharesBean.setCode(code);
-                    allSharesBean.setName(name);
-                    allSharesBean.setMode(mode);
-                    allSharesBean.setRanking(ranking);
-                    allSharesBean.setTrade(trade);
-                    starList.add(allSharesBean);
+                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                    if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
+                            && (maxMinDiff / open) <= 0.05) {
+                        AllSharesBean allSharesBean = new AllSharesBean();
+                        allSharesBean.setCode(code);
+                        allSharesBean.setName(name);
+                        allSharesBean.setMode(mode);
+                        allSharesBean.setRanking(ranking);
+                        allSharesBean.setTrade(trade);
+                        starList.add(allSharesBean);
+                    }
                 }
             }
 
@@ -274,7 +289,9 @@ public class AnalysisData {
             if (currentWave > -2 && currentWave < 2) {
                 if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
                     SharesBean sharesBean = sharesBeans.get(0);
-                    if (sharesBean.getWave() > 3) {
+                    //不能是阴涨  也不能是跳空涨
+                    if ((sharesBean.getClosePrice() > sharesBean.getOpenPrice())
+                            && (sharesBean.getClosePrice() - sharesBean.getOpenPrice()) / sharesBean.getOpenPrice() > 3) {
                         AllSharesBean allSharesBean = new AllSharesBean();
                         allSharesBean.setCode(code);
                         allSharesBean.setName(name);
