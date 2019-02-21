@@ -122,6 +122,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 intent.putParcelableArrayListExtra("list", analysisData.getMinNumberList());
                 StartActivity.this.startActivity(intent);
             }
+            break;
             case R.id.button_six: {
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 intent.putExtra("title", "小十字星");

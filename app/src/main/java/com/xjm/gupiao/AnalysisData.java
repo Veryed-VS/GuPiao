@@ -220,7 +220,7 @@ public class AnalysisData {
             //找倒锤子形态
             if (currentWave < 3 && currentWave > -2) {
                 //不可以跳空
-                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                if ((Math.abs(open - old_open)) / old_open < 0.006) {
                     if (open < close) {  //涨
                         if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
                             if (currentPrice > maxPrice) {
@@ -253,7 +253,7 @@ public class AnalysisData {
 
             //另一种倒锤子形态
             if (currentWave >= 1.5) {
-                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                if ((Math.abs(open - old_open)) / old_open < 0.006) {
                     if (((height - close) > 2 * (open - low)) && ((height - close) > (close - open))) {
                         if (currentPrice > maxPrice) {
                             AllSharesBean allSharesBean = new AllSharesBean();
@@ -271,9 +271,9 @@ public class AnalysisData {
             float openCloseDiff = Math.abs(open - close);
             //小十字星
             if (currentWave > -2 && currentWave < 2) {
-                if ((Math.abs(open - old_open)) / old_open < 0.6) {
+                if ((Math.abs(open - old_open)) / old_open < 0.006) {
                     if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
-                            && (maxMinDiff / open) <= 0.05) {
+                            && (maxMinDiff / open) <= 0.03) {
                         AllSharesBean allSharesBean = new AllSharesBean();
                         allSharesBean.setCode(code);
                         allSharesBean.setName(name);
@@ -289,16 +289,19 @@ public class AnalysisData {
             if (currentWave > -2 && currentWave < 2) {
                 if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
                     SharesBean sharesBean = sharesBeans.get(0);
-                    //不能是阴涨  也不能是跳空涨
-                    if ((sharesBean.getClosePrice() > sharesBean.getOpenPrice())
-                            && (sharesBean.getClosePrice() - sharesBean.getOpenPrice()) / sharesBean.getOpenPrice() > 3) {
-                        AllSharesBean allSharesBean = new AllSharesBean();
-                        allSharesBean.setCode(code);
-                        allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
-                        allSharesBean.setRanking(ranking);
-                        allSharesBean.setTrade(trade);
-                        zhongjiList.add(allSharesBean);
+                    //今天不能跳空
+                    if ((Math.abs(open - old_open)) / old_open < 0.006) {
+                        //昨天不能是阴涨  也不能是跳空涨
+                        if ((sharesBean.getClosePrice() > sharesBean.getOpenPrice())
+                                && (sharesBean.getClosePrice() - sharesBean.getOpenPrice()) / sharesBean.getOpenPrice() >= 0.03) {
+                            AllSharesBean allSharesBean = new AllSharesBean();
+                            allSharesBean.setCode(code);
+                            allSharesBean.setName(name);
+                            allSharesBean.setMode(mode);
+                            allSharesBean.setRanking(ranking);
+                            allSharesBean.setTrade(trade);
+                            zhongjiList.add(allSharesBean);
+                        }
                     }
                 }
             }
@@ -313,6 +316,23 @@ public class AnalysisData {
                     }
                 }
                 if (isNumberMin) {
+                    AllSharesBean allSharesBean = new AllSharesBean();
+                    allSharesBean.setCode(code);
+                    allSharesBean.setName(name);
+                    allSharesBean.setMode(mode);
+                    allSharesBean.setRanking(ranking);
+                    allSharesBean.setTrade(trade);
+                    minNumberList.add(allSharesBean);
+                }
+
+                //十天量能一半
+                long numberCount = 0;
+                int numberIndex = 0;
+                for (int  a = 0; a < 9; a++) {
+                    numberCount += sharesBeans.get(a).getNumber();
+                    numberIndex = a;
+                }
+                if (number <= (numberCount / (numberIndex * 1.f)) * 0.5f) {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
                     allSharesBean.setName(name);
