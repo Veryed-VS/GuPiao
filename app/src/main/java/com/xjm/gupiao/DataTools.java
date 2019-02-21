@@ -13,7 +13,7 @@ public class DataTools {
     public static final String SHARES_PAN_DATA = "http://hq.sinajs.cn/list=";
 
     public static final String getSHARES_PAN_URL(String code) {
-        return SHARES_PAN_DATA + (code.startsWith("0") ? "sz" : "sh")+code;
+        return SHARES_PAN_DATA + (code.startsWith("0") ? "sz" : "sh") + code;
     }
 
     public static String getSHARES_OLD_URL(int mode, String code) {
@@ -37,7 +37,7 @@ public class DataTools {
         Date nowDate = new Date();
         Calendar nowCalendar = Calendar.getInstance();
         nowCalendar.setTime(nowDate);
-        nowCalendar.set(Calendar.DATE, nowCalendar.get(Calendar.DATE) - 40);
+        nowCalendar.set(Calendar.DATE, nowCalendar.get(Calendar.DATE) - 60);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String result = sdf.format(nowCalendar.getTime());
         return result;

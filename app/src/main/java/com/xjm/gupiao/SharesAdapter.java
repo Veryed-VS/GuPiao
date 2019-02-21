@@ -13,12 +13,12 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 
 public class SharesAdapter extends BaseAdapter {
-    private ArrayList<ResultBean> resultBeans;
+    private ArrayList<AllSharesBean> resultBeans;
     private RequestOptions options = new RequestOptions()
             .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true);
     private MainActivity mainActivity;
 
-    public SharesAdapter(ArrayList<ResultBean> resultBeans, MainActivity mainActivity) {
+    public SharesAdapter(ArrayList<AllSharesBean> resultBeans, MainActivity mainActivity) {
         this.resultBeans = resultBeans;
         this.mainActivity = mainActivity;
     }
@@ -52,7 +52,7 @@ public class SharesAdapter extends BaseAdapter {
         } else {
             holder = (Holder) convertView.getTag();
         }
-        ResultBean resultBean = resultBeans.get(position);
+        AllSharesBean resultBean = resultBeans.get(position);
         String dayUrl = "http://image.sinajs.cn/newchart/daily/n/"
                 + (resultBean.getCode().startsWith("0") ? "sz" : "sh")
                 + resultBean.getCode() + ".gif";
