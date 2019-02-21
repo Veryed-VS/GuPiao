@@ -23,7 +23,9 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class AnalysisData {
-    private HttpClient httpClient = new DefaultHttpClient();
+    private HttpClient httpClient1 = new DefaultHttpClient();
+    private HttpClient httpClient2 = new DefaultHttpClient();
+    private HttpClient httpClient3 = new DefaultHttpClient();
     private ArrayList<AllSharesBean> cuiziList = new ArrayList<>();   //倒锤子形态
     private ArrayList<AllSharesBean> zhongjiList = new ArrayList<>(); //上涨中继
     private ArrayList<AllSharesBean> minNumberList = new ArrayList<>();  //量能最低
@@ -52,7 +54,7 @@ public class AnalysisData {
 
     public void runAnalysisData() throws IOException, JSONException {
         HttpGet httpGet = new HttpGet(DataTools.ALL_CODE_URL);
-        HttpResponse httpResponse = httpClient.execute(httpGet);
+        HttpResponse httpResponse = httpClient1.execute(httpGet);
         HttpEntity httpEntity = httpResponse.getEntity();
         if (httpEntity == null) {
             return;
@@ -105,11 +107,13 @@ public class AnalysisData {
             if (currentPrice < 3 || currentPrice > 40) {
                 continue;
             }
-
+            float currentWave = Float.valueOf(sharesStr[6]);  //当前涨幅
+            if (currentWave < -3) {
+                continue;
+            }
             EventBus.getDefault().post(new ProgressBean(arrayLength, i));
 
             //模式,代码,名称,当前价格,主力流入净占比,今日主力排行,今日涨幅,5日主力流入净占比,5日主力排行,5日涨幅,10日主力流入净占比,10日主力排行,10日涨幅,行业
-            float currentWave = Float.valueOf(sharesStr[6]);  //当前涨幅
             String code = sharesStr[1];    //代码
             String name = sharesStr[2];    //名称
             String trade = sharesStr[13];  //行业
@@ -118,7 +122,7 @@ public class AnalysisData {
 
             //今日具体数据
             HttpGet httpGet1 = new HttpGet(DataTools.getSHARES_PAN_URL(code));
-            HttpResponse httpResponse1 = httpClient.execute(httpGet1);
+            HttpResponse httpResponse1 = httpClient2.execute(httpGet1);
             HttpEntity httpEntity1 = httpResponse1.getEntity();
             if (httpEntity1 == null) {
                 continue;
@@ -140,7 +144,7 @@ public class AnalysisData {
             long number = Long.valueOf(line_data[8]);     // 成交量
 
             HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(mode, code));
-            HttpResponse httpResponse2 = httpClient.execute(httpGet2);
+            HttpResponse httpResponse2 = httpClient3.execute(httpGet2);
             HttpEntity httpEntity2 = httpResponse2.getEntity();
             if (httpEntity2 == null) {
                 continue;
@@ -167,6 +171,10 @@ public class AnalysisData {
                 bean.setNumber(Long.valueOf(line_item[10]));        // 成交量
                 bean.setWave(Float.valueOf(9));                     // 涨跌幅
                 sharesBeans.add(bean);
+            }
+
+            if (sharesBeans.size() < 20) {
+                continue;
             }
 
             float priceCount = currentPrice;
@@ -202,31 +210,33 @@ public class AnalysisData {
             }
 
             //找倒锤子形态
-            if (open < close) {  //涨
-                if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
-                    if (currentPrice > maxPrice) {
-                        AllSharesBean allSharesBean = new AllSharesBean();
-                        allSharesBean.setCode(code);
-                        allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
-                        allSharesBean.setRanking(ranking);
-                        allSharesBean.setTrade(trade);
-                        cuiziList.add(allSharesBean);
+            if (currentWave < 3 && currentWave > -2) {
+                if (open < close) {  //涨
+                    if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
+                        if (currentPrice > maxPrice) {
+                            AllSharesBean allSharesBean = new AllSharesBean();
+                            allSharesBean.setCode(code);
+                            allSharesBean.setName(name);
+                            allSharesBean.setMode(mode);
+                            allSharesBean.setRanking(ranking);
+                            allSharesBean.setTrade(trade);
+                            cuiziList.add(allSharesBean);
+                        }
+                        continue;
                     }
-                    continue;
-                }
-            } else {  //跌
-                if (((height - close) >= 1.5 * (open - close)) && ((height - open) >= 1.5 * (close - low))) {
-                    if (currentPrice > maxPrice) {
-                        AllSharesBean allSharesBean = new AllSharesBean();
-                        allSharesBean.setCode(code);
-                        allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
-                        allSharesBean.setRanking(ranking);
-                        allSharesBean.setTrade(trade);
-                        cuiziList.add(allSharesBean);
+                } else {  //跌
+                    if (((height - close) >= 1.5 * (open - close)) && ((height - open) >= 1.5 * (close - low))) {
+                        if (currentPrice > maxPrice) {
+                            AllSharesBean allSharesBean = new AllSharesBean();
+                            allSharesBean.setCode(code);
+                            allSharesBean.setName(name);
+                            allSharesBean.setMode(mode);
+                            allSharesBean.setRanking(ranking);
+                            allSharesBean.setTrade(trade);
+                            cuiziList.add(allSharesBean);
+                        }
+                        continue;
                     }
-                    continue;
                 }
             }
 
@@ -244,51 +254,56 @@ public class AnalysisData {
                     }
                 }
             }
-
-            //小十字星
             float maxMinDiff = Math.abs(height - low);
             float openCloseDiff = Math.abs(open - close);
-            if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
-                    && (maxMinDiff / open) <= 0.05) {
-                AllSharesBean allSharesBean = new AllSharesBean();
-                allSharesBean.setCode(code);
-                allSharesBean.setName(name);
-                allSharesBean.setMode(mode);
-                allSharesBean.setRanking(ranking);
-                allSharesBean.setTrade(trade);
-                starList.add(allSharesBean);
-            }
-
-            //上涨中继
-            if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
-                SharesBean sharesBean = sharesBeans.get(0);
-                if (sharesBean.getWave() > 3) {
+            //小十字星
+            if (currentWave > -2 && currentWave < 2) {
+                if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
+                        && (maxMinDiff / open) <= 0.05) {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
                     allSharesBean.setName(name);
                     allSharesBean.setMode(mode);
                     allSharesBean.setRanking(ranking);
                     allSharesBean.setTrade(trade);
-                    zhongjiList.add(allSharesBean);
+                    starList.add(allSharesBean);
+                }
+            }
+
+            //上涨中继
+            if (currentWave > -2 && currentWave < 2) {
+                if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
+                    SharesBean sharesBean = sharesBeans.get(0);
+                    if (sharesBean.getWave() > 3) {
+                        AllSharesBean allSharesBean = new AllSharesBean();
+                        allSharesBean.setCode(code);
+                        allSharesBean.setName(name);
+                        allSharesBean.setMode(mode);
+                        allSharesBean.setRanking(ranking);
+                        allSharesBean.setTrade(trade);
+                        zhongjiList.add(allSharesBean);
+                    }
                 }
             }
 
             //5日量能最小
-            boolean isNumberMin = true;
-            for (int a = 0; a < 5; a++) {
-                if (number > sharesBeans.get(a).getNumber()) {
-                    isNumberMin = false;
-                    break;
+            if (currentWave < 2 && currentWave > -5) {
+                boolean isNumberMin = true;
+                for (int a = 0; a < 5; a++) {
+                    if (number > sharesBeans.get(a).getNumber()) {
+                        isNumberMin = false;
+                        break;
+                    }
                 }
-            }
-            if (isNumberMin) {
-                AllSharesBean allSharesBean = new AllSharesBean();
-                allSharesBean.setCode(code);
-                allSharesBean.setName(name);
-                allSharesBean.setMode(mode);
-                allSharesBean.setRanking(ranking);
-                allSharesBean.setTrade(trade);
-                minNumberList.add(allSharesBean);
+                if (isNumberMin) {
+                    AllSharesBean allSharesBean = new AllSharesBean();
+                    allSharesBean.setCode(code);
+                    allSharesBean.setName(name);
+                    allSharesBean.setMode(mode);
+                    allSharesBean.setRanking(ranking);
+                    allSharesBean.setTrade(trade);
+                    minNumberList.add(allSharesBean);
+                }
             }
         }
         Collections.sort(cuiziList, new Comparator<AllSharesBean>() {
