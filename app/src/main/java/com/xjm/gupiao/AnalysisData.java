@@ -360,7 +360,7 @@ public class AnalysisData {
             //5日量能最小
             if (currentWave < 2 && currentWave > -5) {
                 boolean isNumberMin = true;
-                for (int a = 0; a < 5; a++) {
+                for (int a = 0; a < 6; a++) {
                     if (number > sharesBeans.get(a).getNumber()) {
                         isNumberMin = false;
                         break;
@@ -379,9 +379,9 @@ public class AnalysisData {
                 //十天量能一半
                 long numberCount = 0;
                 int numberIndex = 0;
-                for (int  a = 0; a < 9; a++) {
+                for (int  a = 0; a < 10; a++) {
                     numberCount += sharesBeans.get(a).getNumber();
-                    numberIndex = a;
+                    numberIndex += 1;
                 }
                 if (number <= (numberCount / (numberIndex * 1.f)) * 0.5f) {
                     AllSharesBean allSharesBean = new AllSharesBean();

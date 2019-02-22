@@ -13,7 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -99,8 +102,19 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             getHistoryData();
+        } else {
+            new MaterialDialog.Builder(StartActivity.this).title("傻逼")
+                    .content("不给权限?那就去死吧!")
+                    .positiveText("好,我去死")
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            StartActivity.this.finish();
+                        }
+                    }).build().show();
         }
     }
+
     private void getHistoryData() {
         FileInputStream fis = null;
         ObjectInputStream ois = null;
@@ -114,7 +128,6 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     getFilesDir().getAbsolutePath() + "/data/history.txt");
             if (!txtFile.exists()) {
                 txtFile.createNewFile();
-                getGuPiaoData();
             } else {
                 fis = new FileInputStream(txtFile);
                 ois = new ObjectInputStream(fis);
