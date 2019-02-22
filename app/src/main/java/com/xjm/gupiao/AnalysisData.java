@@ -31,6 +31,7 @@ public class AnalysisData {
     private ArrayList<AllSharesBean> minNumberList = new ArrayList<>();  //量能最低
     private ArrayList<AllSharesBean> lineList = new ArrayList<>();   //三线合一
     private ArrayList<AllSharesBean> starList = new ArrayList<>();   //小十字星
+    private ArrayList<AllSharesBean> longtouList = new ArrayList<>();//龙头
 
     public ArrayList<AllSharesBean> getCuiziList() {
         return cuiziList;
@@ -52,7 +53,46 @@ public class AnalysisData {
         return starList;
     }
 
+    public ArrayList<AllSharesBean> getLongtouList() {
+        return longtouList;
+    }
+
+    public void setCuiziList(ArrayList<AllSharesBean> cuiziList) {
+        this.cuiziList = cuiziList;
+    }
+
+    public void setZhongjiList(ArrayList<AllSharesBean> zhongjiList) {
+        this.zhongjiList = zhongjiList;
+    }
+
+    public void setLineList(ArrayList<AllSharesBean> lineList) {
+        this.lineList = lineList;
+    }
+
+    public void setLongtouList(ArrayList<AllSharesBean> longtouList) {
+        this.longtouList = longtouList;
+    }
+
+    public void setMinNumberList(ArrayList<AllSharesBean> minNumberList) {
+        this.minNumberList = minNumberList;
+    }
+
+    public void setStarList(ArrayList<AllSharesBean> starList) {
+        this.starList = starList;
+    }
+
+    private void cleanAll(){
+        cuiziList.clear();
+        zhongjiList.clear();
+        lineList.clear();
+        longtouList.clear();
+        minNumberList.clear();
+        starList.clear();
+    }
+
     public void runAnalysisData() throws IOException, JSONException {
+        cleanAll();
+
         HttpGet httpGet = new HttpGet(DataTools.ALL_CODE_URL);
         HttpResponse httpResponse = httpClient1.execute(httpGet);
         HttpEntity httpEntity = httpResponse.getEntity();
@@ -253,8 +293,8 @@ public class AnalysisData {
 
             //另一种倒锤子形态
             if (currentWave >= 1.5) {
-                if ((Math.abs(open - old_open)) / old_open < 0.006) {
-                    if (((height - close) > 2 * (open - low)) && ((height - close) > (close - open))) {
+                if ((Math.abs(open - old_open)) / old_open < 0.01) {
+                    if (((height - close) > (open - low)) && ((height - close) > (close - open))) {
                         if (currentPrice > maxPrice) {
                             AllSharesBean allSharesBean = new AllSharesBean();
                             allSharesBean.setCode(code);

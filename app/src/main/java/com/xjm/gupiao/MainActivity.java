@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         TextView titleTxt = findViewById(R.id.title_textView);
         ArrayList<AllSharesBean> sharesBeans = intent.getParcelableArrayListExtra("list");
 
-        String titleStr = intent.getStringExtra("title");
+        String titleStr = intent.getStringExtra("title")+"("+sharesBeans.size()+")";
         titleTxt.setText(titleStr);
 
         ListView listView = findViewById(R.id.list_view);
