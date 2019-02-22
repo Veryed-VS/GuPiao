@@ -241,6 +241,17 @@ public class AnalysisData {
             }
             float twentyPrice = priceCount / 20.f;
 
+            //龙头股
+            if(currentWave >= 6){
+                AllSharesBean allSharesBean = new AllSharesBean();
+                allSharesBean.setCode(code);
+                allSharesBean.setName(name);
+                allSharesBean.setMode(mode);
+                allSharesBean.setRanking(ranking);
+                allSharesBean.setTrade(trade);
+                longtouList.add(allSharesBean);
+            }
+
             //三线合一
             float maxPrice = Math.max(Math.max(fivePrice, tenPrice), Math.max(fivePrice, twentyPrice));
             float minPrice = Math.min(Math.min(fivePrice, tenPrice), Math.min(fivePrice, twentyPrice));
