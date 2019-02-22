@@ -13,15 +13,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -286,11 +283,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 StartActivity.this.startActivity(intent);
             }
             break;
-            case R.id.button_three:
+            case R.id.button_three: {
                 Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 intent.putExtra("title", "龙头牛股");
                 intent.putParcelableArrayListExtra("list", analysisData.getLongtouList());
                 StartActivity.this.startActivity(intent);
+            }
                 break;
         }
     }
