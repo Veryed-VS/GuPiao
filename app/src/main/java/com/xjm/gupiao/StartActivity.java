@@ -13,12 +13,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +39,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     private Button fiveButton;
     private Button sixButton;
     private Button threeButton;
+    private Button sevenButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         sixButton.setOnClickListener(this);
         threeButton = findViewById(R.id.button_three);
         threeButton.setOnClickListener(this);
+        sevenButton = findViewById(R.id.button_seven);
+        sevenButton.setOnClickListener(this);
         findViewById(R.id.refresh_imageView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,33 +122,25 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         try {
-            File txtFilePath = new File(getApplicationContext().
-                    getFilesDir().getAbsolutePath() + "/data");
-            if (!txtFilePath.exists()) {
-                txtFilePath.mkdirs();
-            }
-            File txtFile = new File(getApplicationContext().
-                    getFilesDir().getAbsolutePath() + "/data/history.txt");
-            if (!txtFile.exists()) {
-                txtFile.createNewFile();
-            } else {
-                fis = new FileInputStream(txtFile);
-                ois = new ObjectInputStream(fis);
-                ResultData resultData = (ResultData) ois.readObject();
-                analysisData.setCuiziList(resultData.getCuiziList());
-                analysisData.setLineList(resultData.getLineList());
-                analysisData.setLongtouList(resultData.getLongtouList());
-                analysisData.setMinNumberList(resultData.getMinNumberList());
-                analysisData.setStarList(resultData.getStarList());
-                analysisData.setZhongjiList(resultData.getZhongjiList());
+            File file = new File(getCacheDir(), "history" + ".txt");
+            fis = new FileInputStream(file);
+            ois = new ObjectInputStream(fis);
+            ResultData resultData = (ResultData) ois.readObject();
+            analysisData.setCuiziList(resultData.getCuiziList());
+            analysisData.setLineList(resultData.getLineList());
+            analysisData.setLongtouList(resultData.getLongtouList());
+            analysisData.setMinNumberList(resultData.getMinNumberList());
+            analysisData.setStarList(resultData.getStarList());
+            analysisData.setZhongjiList(resultData.getZhongjiList());
+            analysisData.setXiaoboList(resultData.getXiaoboList());
 
-                oneButton.setText(oneButton.getText().toString() + "(" + analysisData.getCuiziList().size() + ")");
-                twoButton.setText(twoButton.getText().toString() + "(" + analysisData.getZhongjiList().size() + ")");
-                threeButton.setText(threeButton.getText().toString() + "(" + analysisData.getLongtouList().size() + ")");
-                fourButton.setText(fourButton.getText().toString() + "(" + analysisData.getLineList().size() + ")");
-                fiveButton.setText(fiveButton.getText().toString() + "(" + analysisData.getMinNumberList().size() + ")");
-                sixButton.setText(sixButton.getText().toString() + "(" + analysisData.getStarList().size() + ")");
-            }
+            oneButton.setText(oneButton.getText().toString() + "(" + analysisData.getCuiziList().size() + ")");
+            twoButton.setText(twoButton.getText().toString() + "(" + analysisData.getZhongjiList().size() + ")");
+            threeButton.setText(threeButton.getText().toString() + "(" + analysisData.getLongtouList().size() + ")");
+            fourButton.setText(fourButton.getText().toString() + "(" + analysisData.getLineList().size() + ")");
+            fiveButton.setText(fiveButton.getText().toString() + "(" + analysisData.getMinNumberList().size() + ")");
+            sixButton.setText(sixButton.getText().toString() + "(" + analysisData.getStarList().size() + ")");
+            sevenButton.setText(sevenButton.getText().toString() + "(" + analysisData.getXiaoboList().size() + ")");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -179,6 +177,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             fourButton.setText(fourButton.getText().toString() + "(" + analysisData.getLineList().size() + ")");
             fiveButton.setText(fiveButton.getText().toString() + "(" + analysisData.getMinNumberList().size() + ")");
             sixButton.setText(sixButton.getText().toString() + "(" + analysisData.getStarList().size() + ")");
+            sevenButton.setText(sevenButton.getText().toString() + "(" + analysisData.getXiaoboList().size() + ")");
 
             ResultData resultData = new ResultData();
             resultData.setCuiziList(analysisData.getCuiziList());
@@ -187,25 +186,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             resultData.setMinNumberList(analysisData.getMinNumberList());
             resultData.setStarList(analysisData.getStarList());
             resultData.setZhongjiList(analysisData.getZhongjiList());
-
-            File txtFilePath = new File(getApplicationContext().
-                    getFilesDir().getAbsolutePath() + "/data");
-            if (!txtFilePath.exists()) {
-                txtFilePath.mkdirs();
-            }
-            File txtFile = new File(getApplicationContext().
-                    getFilesDir().getAbsolutePath() + "/data/history.txt");
-            if (!txtFile.exists()) {
-                try {
-                    txtFile.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            resultData.setXiaoboList(analysisData.getXiaoboList());
             FileOutputStream fos = null;
             ObjectOutputStream os = null;
             try {
-                fos = new FileOutputStream(txtFile);
+                File file = new File(getCacheDir(), "history" + ".txt");
+                fos = new FileOutputStream(file);
                 os = new ObjectOutputStream(fos);
                 os.writeObject(resultData);
                 os.close();
@@ -289,6 +275,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 intent.putParcelableArrayListExtra("list", analysisData.getLongtouList());
                 StartActivity.this.startActivity(intent);
             }
+            break;
+            case R.id.button_seven:
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                intent.putExtra("title", "小波动股");
+                intent.putParcelableArrayListExtra("list", analysisData.getXiaoboList());
+                StartActivity.this.startActivity(intent);
                 break;
         }
     }

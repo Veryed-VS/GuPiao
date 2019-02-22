@@ -12,6 +12,11 @@ public class ResultData implements Serializable {
     private ArrayList<AllSharesBean> lineList = new ArrayList<>();   //三线合一
     private ArrayList<AllSharesBean> starList = new ArrayList<>();   //小十字星
     private ArrayList<AllSharesBean> longtouList = new ArrayList<>();//龙头
+    private ArrayList<AllSharesBean> xiaoboList = new ArrayList<>(); //小波动
+
+    public ArrayList<AllSharesBean> getXiaoboList() {
+        return xiaoboList;
+    }
 
     public ArrayList<AllSharesBean> getCuiziList() {
         return cuiziList;
@@ -59,5 +64,9 @@ public class ResultData implements Serializable {
 
     public void setStarList(ArrayList<AllSharesBean> starList) {
         this.starList = starList;
+    }
+
+    public void setXiaoboList(ArrayList<AllSharesBean> xiaoboList) {
+        this.xiaoboList = xiaoboList;
     }
 }

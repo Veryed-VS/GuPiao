@@ -32,6 +32,7 @@ public class AnalysisData {
     private ArrayList<AllSharesBean> lineList = new ArrayList<>();   //三线合一
     private ArrayList<AllSharesBean> starList = new ArrayList<>();   //小十字星
     private ArrayList<AllSharesBean> longtouList = new ArrayList<>();//龙头
+    private ArrayList<AllSharesBean> xiaoboList = new ArrayList<>(); //小波动
 
     public ArrayList<AllSharesBean> getCuiziList() {
         return cuiziList;
@@ -55,6 +56,14 @@ public class AnalysisData {
 
     public ArrayList<AllSharesBean> getLongtouList() {
         return longtouList;
+    }
+
+    public ArrayList<AllSharesBean> getXiaoboList() {
+        return xiaoboList;
+    }
+
+    public void setXiaoboList(ArrayList<AllSharesBean> xiaoboList) {
+        this.xiaoboList = xiaoboList;
     }
 
     public void setCuiziList(ArrayList<AllSharesBean> cuiziList) {
@@ -88,6 +97,7 @@ public class AnalysisData {
         longtouList.clear();
         minNumberList.clear();
         starList.clear();
+        xiaoboList.clear();
     }
 
     public void runAnalysisData() throws IOException, JSONException {
@@ -255,7 +265,7 @@ public class AnalysisData {
             //三线合一
             float maxPrice = Math.max(Math.max(fivePrice, tenPrice), Math.max(fivePrice, twentyPrice));
             float minPrice = Math.min(Math.min(fivePrice, tenPrice), Math.min(fivePrice, twentyPrice));
-            if (((maxPrice - minPrice) / currentPrice) <= 0.01) {
+            if (((maxPrice - minPrice) / currentPrice) <= 0.008) {
                 if (currentPrice > maxPrice) {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
@@ -271,7 +281,7 @@ public class AnalysisData {
             //找倒锤子形态
             if (currentWave < 3 && currentWave > -2) {
                 //不可以跳空
-                if ((Math.abs(open - old_open)) / old_open < 0.006) {
+                if ((Math.abs(open - old_open)) / old_open < 0.008) {
                     if (open < close) {  //涨
                         if (((height - close) >= 1.5 * (close - open)) && ((height - close) >= 1.5 * (open - low))) {
                             if (currentPrice > maxPrice) {
@@ -304,7 +314,7 @@ public class AnalysisData {
 
             //另一种倒锤子形态
             if (currentWave >= 1.5) {
-                if ((Math.abs(open - old_open)) / old_open < 0.01) {
+                if ((Math.abs(open - old_open)) / old_open < 0.008) {
                     if (((height - close) > (open - low)) && ((height - close) > (close - open))) {
                         if (currentPrice > maxPrice) {
                             AllSharesBean allSharesBean = new AllSharesBean();
@@ -322,7 +332,7 @@ public class AnalysisData {
             float openCloseDiff = Math.abs(open - close);
             //小十字星
             if (currentWave > -2 && currentWave < 2) {
-                if ((Math.abs(open - old_open)) / old_open < 0.006) {
+                if ((Math.abs(open - old_open)) / old_open < 0.008) {
                     if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 3)
                             && (maxMinDiff / open) <= 0.03) {
                         AllSharesBean allSharesBean = new AllSharesBean();
@@ -341,7 +351,7 @@ public class AnalysisData {
                 if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
                     SharesBean sharesBean = sharesBeans.get(0);
                     //今天不能跳空
-                    if ((Math.abs(open - old_open)) / old_open < 0.006) {
+                    if ((Math.abs(open - old_open)) / old_open < 0.008) {
                         //昨天不能是阴涨  也不能是跳空涨
                         if ((sharesBean.getClosePrice() > sharesBean.getOpenPrice())
                                 && (sharesBean.getClosePrice() - sharesBean.getOpenPrice()) / sharesBean.getOpenPrice() >= 0.03) {
@@ -391,6 +401,19 @@ public class AnalysisData {
                     allSharesBean.setRanking(ranking);
                     allSharesBean.setTrade(trade);
                     minNumberList.add(allSharesBean);
+                }
+            }
+            if(currentWave <1 && currentWave > -1){
+                if ((Math.abs(open - old_open)) / old_open < 0.06) {
+                    if((height-low)/open < 0.01){
+                        AllSharesBean allSharesBean = new AllSharesBean();
+                        allSharesBean.setCode(code);
+                        allSharesBean.setName(name);
+                        allSharesBean.setMode(mode);
+                        allSharesBean.setRanking(ranking);
+                        allSharesBean.setTrade(trade);
+                        xiaoboList.add(allSharesBean);
+                    }
                 }
             }
         }
