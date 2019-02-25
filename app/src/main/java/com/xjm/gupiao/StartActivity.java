@@ -123,7 +123,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         ObjectInputStream ois = null;
         try {
             File file = new File(getApplication().getFilesDir().getAbsolutePath(), "/history.txt");
-            if(!file.exists()){
+            if (!file.exists()) {
                 return;
             }
 
@@ -138,13 +138,13 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             analysisData.setZhongjiList(resultData.getZhongjiList());
             analysisData.setXiaoboList(resultData.getXiaoboList());
 
-            oneButton.setText(oneButton.getText().toString() + "(" + analysisData.getCuiziList().size() + ")");
-            twoButton.setText(twoButton.getText().toString() + "(" + analysisData.getZhongjiList().size() + ")");
-            threeButton.setText(threeButton.getText().toString() + "(" + analysisData.getLongtouList().size() + ")");
-            fourButton.setText(fourButton.getText().toString() + "(" + analysisData.getLineList().size() + ")");
-            fiveButton.setText(fiveButton.getText().toString() + "(" + analysisData.getMinNumberList().size() + ")");
-            sixButton.setText(sixButton.getText().toString() + "(" + analysisData.getStarList().size() + ")");
-            sevenButton.setText(sevenButton.getText().toString() + "(" + analysisData.getXiaoboList().size() + ")");
+            oneButton.setText("倒锤子形态" + "(" + analysisData.getCuiziList().size() + ")");
+            twoButton.setText("上涨中继" + "(" + analysisData.getZhongjiList().size() + ")");
+            threeButton.setText("龙头牛股" + "(" + analysisData.getLongtouList().size() + ")");
+            fourButton.setText("三线合一" + "(" + analysisData.getLineList().size() + ")");
+            fiveButton.setText("量能最低" + "(" + analysisData.getMinNumberList().size() + ")");
+            sixButton.setText("小十字星" + "(" + analysisData.getStarList().size() + ")");
+            sevenButton.setText("小波动股" + "(" + analysisData.getXiaoboList().size() + ")");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -175,13 +175,13 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            oneButton.setText(oneButton.getText().toString() + "(" + analysisData.getCuiziList().size() + ")");
-            twoButton.setText(twoButton.getText().toString() + "(" + analysisData.getZhongjiList().size() + ")");
-            threeButton.setText(threeButton.getText().toString() + "(" + analysisData.getLongtouList().size() + ")");
-            fourButton.setText(fourButton.getText().toString() + "(" + analysisData.getLineList().size() + ")");
-            fiveButton.setText(fiveButton.getText().toString() + "(" + analysisData.getMinNumberList().size() + ")");
-            sixButton.setText(sixButton.getText().toString() + "(" + analysisData.getStarList().size() + ")");
-            sevenButton.setText(sevenButton.getText().toString() + "(" + analysisData.getXiaoboList().size() + ")");
+            oneButton.setText("倒锤子形态" + "(" + analysisData.getCuiziList().size() + ")");
+            twoButton.setText("上涨中继" + "(" + analysisData.getZhongjiList().size() + ")");
+            threeButton.setText("龙头牛股" + "(" + analysisData.getLongtouList().size() + ")");
+            fourButton.setText("三线合一" + "(" + analysisData.getLineList().size() + ")");
+            fiveButton.setText("量能最低" + "(" + analysisData.getMinNumberList().size() + ")");
+            sixButton.setText("小十字星" + "(" + analysisData.getStarList().size() + ")");
+            sevenButton.setText("小波动股" + "(" + analysisData.getXiaoboList().size() + ")");
 
             ResultData resultData = new ResultData();
             resultData.setCuiziList(analysisData.getCuiziList());
@@ -195,7 +195,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             ObjectOutputStream os = null;
             try {
                 File file = new File(getApplication().getFilesDir().getAbsolutePath(), "/history.txt");
-                if(!file.exists()){
+                if (!file.exists()) {
                     file.createNewFile();
                 }
                 fos = new FileOutputStream(file);
