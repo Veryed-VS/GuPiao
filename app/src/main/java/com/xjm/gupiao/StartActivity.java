@@ -122,7 +122,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         FileInputStream fis = null;
         ObjectInputStream ois = null;
         try {
-            File file = new File(getCacheDir(), "history" + ".txt");
+            File file = new File(getApplication().getFilesDir().getAbsolutePath(), "/history.txt");
+            if(!file.exists()){
+                return;
+            }
+
             fis = new FileInputStream(file);
             ois = new ObjectInputStream(fis);
             ResultData resultData = (ResultData) ois.readObject();
@@ -190,7 +194,10 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             FileOutputStream fos = null;
             ObjectOutputStream os = null;
             try {
-                File file = new File(getCacheDir(), "history" + ".txt");
+                File file = new File(getApplication().getFilesDir().getAbsolutePath(), "/history.txt");
+                if(!file.exists()){
+                    file.createNewFile();
+                }
                 fos = new FileOutputStream(file);
                 os = new ObjectOutputStream(fos);
                 os.writeObject(resultData);

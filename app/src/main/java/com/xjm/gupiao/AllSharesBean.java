@@ -3,20 +3,14 @@ package com.xjm.gupiao;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class AllSharesBean implements Parcelable {
-    private int mode;      //模式
+import java.io.Serializable;
+
+public class AllSharesBean implements Parcelable, Serializable {
+    private static final long serialVersionUID = 1L;
     private String code;   //代码
     private String name;   //名称
     private int ranking;   //今日主力排行
     private String trade;  //行业
-
-    public int getMode() {
-        return mode;
-    }
-
-    public void setMode(int mode) {
-        this.mode = mode;
-    }
 
     public String getCode() {
         return code;
@@ -57,7 +51,6 @@ public class AllSharesBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.mode);
         dest.writeString(this.code);
         dest.writeString(this.name);
         dest.writeInt(this.ranking);
@@ -68,7 +61,6 @@ public class AllSharesBean implements Parcelable {
     }
 
     protected AllSharesBean(Parcel in) {
-        this.mode = in.readInt();
         this.code = in.readString();
         this.name = in.readString();
         this.ranking = in.readInt();

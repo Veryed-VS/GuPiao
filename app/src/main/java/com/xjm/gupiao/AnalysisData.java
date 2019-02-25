@@ -256,7 +256,6 @@ public class AnalysisData {
                 AllSharesBean allSharesBean = new AllSharesBean();
                 allSharesBean.setCode(code);
                 allSharesBean.setName(name);
-                allSharesBean.setMode(mode);
                 allSharesBean.setRanking(ranking);
                 allSharesBean.setTrade(trade);
                 longtouList.add(allSharesBean);
@@ -270,7 +269,6 @@ public class AnalysisData {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
                     allSharesBean.setName(name);
-                    allSharesBean.setMode(mode);
                     allSharesBean.setRanking(ranking);
                     allSharesBean.setTrade(trade);
                     lineList.add(allSharesBean);
@@ -288,7 +286,6 @@ public class AnalysisData {
                                 AllSharesBean allSharesBean = new AllSharesBean();
                                 allSharesBean.setCode(code);
                                 allSharesBean.setName(name);
-                                allSharesBean.setMode(mode);
                                 allSharesBean.setRanking(ranking);
                                 allSharesBean.setTrade(trade);
                                 cuiziList.add(allSharesBean);
@@ -301,7 +298,6 @@ public class AnalysisData {
                                 AllSharesBean allSharesBean = new AllSharesBean();
                                 allSharesBean.setCode(code);
                                 allSharesBean.setName(name);
-                                allSharesBean.setMode(mode);
                                 allSharesBean.setRanking(ranking);
                                 allSharesBean.setTrade(trade);
                                 cuiziList.add(allSharesBean);
@@ -320,7 +316,6 @@ public class AnalysisData {
                             AllSharesBean allSharesBean = new AllSharesBean();
                             allSharesBean.setCode(code);
                             allSharesBean.setName(name);
-                            allSharesBean.setMode(mode);
                             allSharesBean.setRanking(ranking);
                             allSharesBean.setTrade(trade);
                             cuiziList.add(allSharesBean);
@@ -338,7 +333,6 @@ public class AnalysisData {
                         AllSharesBean allSharesBean = new AllSharesBean();
                         allSharesBean.setCode(code);
                         allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
                         allSharesBean.setRanking(ranking);
                         allSharesBean.setTrade(trade);
                         starList.add(allSharesBean);
@@ -358,7 +352,6 @@ public class AnalysisData {
                             AllSharesBean allSharesBean = new AllSharesBean();
                             allSharesBean.setCode(code);
                             allSharesBean.setName(name);
-                            allSharesBean.setMode(mode);
                             allSharesBean.setRanking(ranking);
                             allSharesBean.setTrade(trade);
                             zhongjiList.add(allSharesBean);
@@ -380,7 +373,6 @@ public class AnalysisData {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
                     allSharesBean.setName(name);
-                    allSharesBean.setMode(mode);
                     allSharesBean.setRanking(ranking);
                     allSharesBean.setTrade(trade);
                     minNumberList.add(allSharesBean);
@@ -397,7 +389,6 @@ public class AnalysisData {
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(code);
                     allSharesBean.setName(name);
-                    allSharesBean.setMode(mode);
                     allSharesBean.setRanking(ranking);
                     allSharesBean.setTrade(trade);
                     minNumberList.add(allSharesBean);
@@ -409,7 +400,6 @@ public class AnalysisData {
                         AllSharesBean allSharesBean = new AllSharesBean();
                         allSharesBean.setCode(code);
                         allSharesBean.setName(name);
-                        allSharesBean.setMode(mode);
                         allSharesBean.setRanking(ranking);
                         allSharesBean.setTrade(trade);
                         xiaoboList.add(allSharesBean);
