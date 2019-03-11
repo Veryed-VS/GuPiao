@@ -37,7 +37,7 @@ public class DataTools {
         Date nowDate = new Date();
         Calendar nowCalendar = Calendar.getInstance();
         nowCalendar.setTime(nowDate);
-        nowCalendar.set(Calendar.DATE, nowCalendar.get(Calendar.DATE) - 60);
+        nowCalendar.set(Calendar.DATE, nowCalendar.get(Calendar.DATE) - 40);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String result = sdf.format(nowCalendar.getTime());
         return result;

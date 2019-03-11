@@ -1,16 +1,21 @@
 package com.xjm.gupiao;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
-public class AllSharesBean implements Parcelable, Serializable {
+public class AllSharesBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String code;   //代码
     private String name;   //名称
-    private int ranking;   //今日主力排行
+    private float number;   //成交额
     private String trade;  //行业
+
+    public float getNumber() {
+        return number;
+    }
+
+    public void setNumber(float number) {
+        this.number = number;
+    }
 
     public String getCode() {
         return code;
@@ -28,14 +33,6 @@ public class AllSharesBean implements Parcelable, Serializable {
         this.name = name;
     }
 
-    public int getRanking() {
-        return ranking;
-    }
-
-    public void setRanking(int ranking) {
-        this.ranking = ranking;
-    }
-
     public String getTrade() {
         return trade;
     }
@@ -43,39 +40,4 @@ public class AllSharesBean implements Parcelable, Serializable {
     public void setTrade(String trade) {
         this.trade = trade;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.code);
-        dest.writeString(this.name);
-        dest.writeInt(this.ranking);
-        dest.writeString(this.trade);
-    }
-
-    public AllSharesBean() {
-    }
-
-    protected AllSharesBean(Parcel in) {
-        this.code = in.readString();
-        this.name = in.readString();
-        this.ranking = in.readInt();
-        this.trade = in.readString();
-    }
-
-    public static final Creator<AllSharesBean> CREATOR = new Creator<AllSharesBean>() {
-        @Override
-        public AllSharesBean createFromParcel(Parcel source) {
-            return new AllSharesBean(source);
-        }
-
-        @Override
-        public AllSharesBean[] newArray(int size) {
-            return new AllSharesBean[size];
-        }
-    };
 }

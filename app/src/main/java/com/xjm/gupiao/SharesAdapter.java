@@ -1,5 +1,6 @@
 package com.xjm.gupiao;
 
+import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +17,11 @@ public class SharesAdapter extends BaseAdapter {
     private ArrayList<AllSharesBean> resultBeans;
     private RequestOptions options = new RequestOptions()
             .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true);
-    private MainActivity mainActivity;
+    private Context context;
 
-    public SharesAdapter(ArrayList<AllSharesBean> resultBeans, MainActivity mainActivity) {
+    public SharesAdapter(ArrayList<AllSharesBean> resultBeans, Context context) {
         this.resultBeans = resultBeans;
-        this.mainActivity = mainActivity;
+        this.context = context;
     }
 
     @Override
@@ -60,13 +61,13 @@ public class SharesAdapter extends BaseAdapter {
                 + (resultBean.getCode().startsWith("0") ? "sz" : "sh")
                 + resultBean.getCode() + ".gif";
         //日K线
-        Glide.with(mainActivity)
+        Glide.with(context)
                 .asGif()
                 .load(Uri.parse(dayUrl))
                 .apply(options)
                 .into(holder.dayImageView);
         //分时线
-        Glide.with(mainActivity)
+        Glide.with(context)
                 .asGif()
                 .load(Uri.parse(minUrl))
                 .apply(options)
