@@ -236,7 +236,7 @@ public class YangActivity extends AppCompatActivity {
                 continue;
             }
             float currentWave = Float.valueOf(sharesStr[6]);
-            if (currentWave < 0 || currentWave > 4) {
+            if (currentWave < 0) {
                 continue;
             }
 

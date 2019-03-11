@@ -235,7 +235,6 @@ public class LineActivity extends AppCompatActivity {
             }
             float currentWave = Float.valueOf(sharesStr[6]);
             if (currentWave >= 0) {
-
                 //今日具体数据
                 HttpGet httpGet1 = new HttpGet(DataTools.getSHARES_PAN_URL(sharesStr[1]));
                 HttpResponse httpResponse1 = httpClient2.execute(httpGet1);
@@ -328,7 +327,6 @@ public class LineActivity extends AppCompatActivity {
                 }
             }
         }
-
         Collections.sort(lineList, new Comparator<AllSharesBean>() {
             @Override
             public int compare(AllSharesBean o1, AllSharesBean o2) {
