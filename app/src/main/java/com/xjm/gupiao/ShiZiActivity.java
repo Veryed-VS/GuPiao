@@ -262,15 +262,10 @@ public class ShiZiActivity extends AppCompatActivity {
             float close = Float.valueOf(line_data[3]);    // 当前价
             float height = Float.valueOf(line_data[4]);   // 最高价
             float low = Float.valueOf(line_data[5]);      // 最低价
-            float old_open = Float.valueOf(line_data[2]); // 前收盘
 
             float maxMinDiff = Math.abs(height - low);
             float openCloseDiff = Math.abs(open - close);
 
-            //跳空
-            if (Math.abs(open - old_open) / old_open >= 0.01) {
-                continue;
-            }
             //波动太大的不要
             if ((height - low) / open >= 0.02) {
                 continue;
