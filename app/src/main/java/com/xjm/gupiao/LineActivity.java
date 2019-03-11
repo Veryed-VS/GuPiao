@@ -230,7 +230,7 @@ public class LineActivity extends AppCompatActivity {
             }
             // 价格低于3块高于30的不考虑
             float currentPrice = Float.valueOf(sharesStr[3]);
-            if (currentPrice < 3 || currentPrice > 30) {
+            if (currentPrice < 3 || currentPrice > 80) {
                 continue;
             }
             float currentWave = Float.valueOf(sharesStr[6]);

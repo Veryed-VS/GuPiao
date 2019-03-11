@@ -231,7 +231,7 @@ public class CuiZiActivity extends AppCompatActivity {
             }
             // 价格低于3块高于40的不考虑
             float currentPrice = Float.valueOf(sharesStr[3]);
-            if (currentPrice < 3 || currentPrice > 40) {
+            if (currentPrice < 3 || currentPrice > 80) {
                 continue;
             }
             float currentWave = Float.valueOf(sharesStr[6]);
@@ -266,6 +266,7 @@ public class CuiZiActivity extends AppCompatActivity {
 
             float maxMinDiff = Math.abs(height - low);
             float openCloseDiff = Math.abs(open - close);
+
             //十字形态
             if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4)) {
                 continue;

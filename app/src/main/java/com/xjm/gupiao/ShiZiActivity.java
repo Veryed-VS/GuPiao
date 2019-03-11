@@ -231,7 +231,7 @@ public class ShiZiActivity extends AppCompatActivity {
             }
             // 价格低于3块高于40的不考虑
             float currentPrice = Float.valueOf(sharesStr[3]);
-            if (currentPrice < 3 || currentPrice > 40) {
+            if (currentPrice < 3 || currentPrice > 80) {
                 continue;
             }
             float currentWave = Float.valueOf(sharesStr[6]);
@@ -268,20 +268,21 @@ public class ShiZiActivity extends AppCompatActivity {
             float openCloseDiff = Math.abs(open - close);
 
             //跳空
-            if(Math.abs(open - old_open) / old_open >= 0.01){
+            if (Math.abs(open - old_open) / old_open >= 0.01) {
                 continue;
             }
-
+            //波动太大的不要
+            if ((height - low) / open >= 0.02) {
+                continue;
+            }
             if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4)) {
-                //波动太大的不要
-                if((height - low)/open < 0.02){
-                    AllSharesBean allSharesBean = new AllSharesBean();
-                    allSharesBean.setCode(sharesStr[1]);
-                    allSharesBean.setName(sharesStr[2]);
-                    allSharesBean.setNumber(Float.valueOf(line_data[9]));
-                    allSharesBean.setTrade(sharesStr[13]);
-                    shiziList.add(allSharesBean);
-                }
+                AllSharesBean allSharesBean = new AllSharesBean();
+                allSharesBean.setCode(sharesStr[1]);
+                allSharesBean.setName(sharesStr[2]);
+                allSharesBean.setNumber(Float.valueOf(line_data[9]));
+                allSharesBean.setTrade(sharesStr[13]);
+                shiziList.add(allSharesBean);
+
             }
         }
         Collections.sort(shiziList, new Comparator<AllSharesBean>() {
