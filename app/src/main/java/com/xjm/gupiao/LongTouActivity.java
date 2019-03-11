@@ -201,7 +201,6 @@ public class LongTouActivity extends AppCompatActivity {
         String userJson = node.get("data").toString();
         JSONArray jsonArray = new JSONArray(userJson);
         int arrayLength = jsonArray.length();
-
         for (int i = 0; i < arrayLength; i++) {
             String jsonStr = jsonArray.get(i).toString();
             String[] sharesStr = jsonStr.split(",");

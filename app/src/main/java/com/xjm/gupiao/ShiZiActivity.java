@@ -238,9 +238,7 @@ public class ShiZiActivity extends AppCompatActivity {
             if (currentWave < -3 || currentWave > 3) {
                 continue;
             }
-
             EventBus.getDefault().post(new ProgressBean(arrayLength, i));
-
             //今日具体数据
             HttpGet httpGet1 = new HttpGet(DataTools.getSHARES_PAN_URL(sharesStr[1]));
             HttpResponse httpResponse1 = httpClient2.execute(httpGet1);
@@ -266,10 +264,6 @@ public class ShiZiActivity extends AppCompatActivity {
             float maxMinDiff = Math.abs(height - low);
             float openCloseDiff = Math.abs(open - close);
 
-            //波动太大的不要
-            if ((height - low) / open >= 0.02) {
-                continue;
-            }
             if ((openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4)) {
                 AllSharesBean allSharesBean = new AllSharesBean();
                 allSharesBean.setCode(sharesStr[1]);
@@ -277,7 +271,6 @@ public class ShiZiActivity extends AppCompatActivity {
                 allSharesBean.setNumber(Float.valueOf(line_data[9]));
                 allSharesBean.setTrade(sharesStr[13]);
                 shiziList.add(allSharesBean);
-
             }
         }
         Collections.sort(shiziList, new Comparator<AllSharesBean>() {
