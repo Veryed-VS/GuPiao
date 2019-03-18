@@ -21,26 +21,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".CuiZiActivity"
-            android:priority="1000"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ShiZiActivity"
-            android:priority="1000"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".LongTouActivity"
-            android:priority="1000"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".LineActivity"
-            android:priority="1000"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".YangActivity"
-            android:priority="1000"
-            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

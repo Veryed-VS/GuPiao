@@ -6,7 +6,7 @@ public class AllSharesBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String code;   //代码
     private String name;   //名称
-    private float number;   //成交额
+    private float number;  //成交额
     private String trade;  //行业
 
     public float getNumber() {
