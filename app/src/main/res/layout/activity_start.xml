@@ -1,40 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#c0c0c0">
 
-    <RelativeLayout
-        android:id="@+id/title_layout"
+    <TextView
+        android:id="@+id/title_textView"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:text="明哥选股"
+        android:textColor="@android:color/white"
+        android:textSize="17sp" />
 
-        <TextView
-            android:id="@+id/title_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="明哥选股"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-        <ImageView
-            android:id="@+id/refresh_imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:padding="10dp"
-            android:src="@drawable/refresh" />
-    </RelativeLayout>
-
-    <ListView
-        android:id="@+id/list_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/title_layout"
-        android:divider="@color/colorPrimary"
-        android:dividerHeight="0.1dp"
-        android:scrollbars="none" />
+        android:layout_below="@+id/title_textView"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/one_button"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:background="#2ecc71"
+            android:stateListAnimator="@null"
+            android:text="股票全览"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/two_button"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:background="#e67e22"
+            android:stateListAnimator="@null"
+            android:text="波段助手"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+    </LinearLayout>
 </RelativeLayout>

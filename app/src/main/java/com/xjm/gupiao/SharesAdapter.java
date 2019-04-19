@@ -54,10 +54,10 @@ public class SharesAdapter extends BaseAdapter {
             holder = (Holder) convertView.getTag();
         }
         AllSharesBean resultBean = resultBeans.get(position);
-        String dayUrl = "http://image.sinajs.cn/newchart/daily/n/"
+        String dayUrl = DataTools.min_image_url
                 + (resultBean.getCode().startsWith("0") ? "sz" : "sh")
                 + resultBean.getCode() + ".gif";
-        String minUrl = "http://image.sinajs.cn/newchart/min/n/"
+        String minUrl = DataTools.image_url
                 + (resultBean.getCode().startsWith("0") ? "sz" : "sh")
                 + resultBean.getCode() + ".gif";
         //日K线
@@ -72,7 +72,7 @@ public class SharesAdapter extends BaseAdapter {
                 .load(Uri.parse(minUrl))
                 .apply(options)
                 .into(holder.minImageView);
-        holder.nameTextView.setText((position+1)+"."+resultBean.getName() + "(" + resultBean.getCode() + ")"+"   "+resultBean.getTrade());
+        holder.nameTextView.setText((position+1)+"."+resultBean.getName() + "(" + resultBean.getCode() + ")");
         return convertView;
     }
 

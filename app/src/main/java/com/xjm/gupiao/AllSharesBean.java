@@ -6,15 +6,14 @@ public class AllSharesBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String code;   //代码
     private String name;   //名称
-    private float number;  //成交额
-    private String trade;  //行业
+    private int rank;      //10日排行
 
-    public float getNumber() {
-        return number;
+    public int getRank() {
+        return rank;
     }
 
-    public void setNumber(float number) {
-        this.number = number;
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     public String getCode() {
@@ -31,13 +30,5 @@ public class AllSharesBean implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getTrade() {
-        return trade;
-    }
-
-    public void setTrade(String trade) {
-        this.trade = trade;
     }
 }
