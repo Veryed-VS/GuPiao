@@ -6,7 +6,16 @@ public class AllSharesBean implements Serializable {
     private static final long serialVersionUID = 1L;
     private String code;   //代码
     private String name;   //名称
+    private float wave;
     private int rank;      //10日排行
+
+    public float getWave() {
+        return wave;
+    }
+
+    public void setWave(float wave) {
+        this.wave = wave;
+    }
 
     public int getRank() {
         return rank;
