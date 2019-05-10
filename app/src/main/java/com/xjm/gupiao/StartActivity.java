@@ -33,6 +33,13 @@ public class StartActivity extends AppCompatActivity {
                 StartActivity.this.startActivity(starIntent);
             }
         });
+        findViewById(R.id.four_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent maActivity = new Intent(StartActivity.this,MaHouActivity.class);
+                StartActivity.this.startActivity(maActivity);
+            }
+        });
 
         if (ContextCompat.checkSelfPermission(StartActivity.this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED

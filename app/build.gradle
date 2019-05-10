@@ -42,4 +42,6 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.1.1'
     //数据库映射
     implementation 'org.greenrobot:greendao:3.2.2'
+    //股票K线图
+    implementation project(path: ':kchartlib')
 }

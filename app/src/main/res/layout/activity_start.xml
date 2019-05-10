@@ -42,5 +42,27 @@
             android:text="波段助手"
             android:textColor="@android:color/white"
             android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/three_button"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:background="#9b59b6"
+            android:stateListAnimator="@null"
+            android:text="皮尔逊相似K线"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/four_button"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:background="#e74c3c"
+            android:stateListAnimator="@null"
+            android:text="马后炮捉妖"
+            android:textColor="@android:color/white"
+            android:textSize="17sp" />
     </LinearLayout>
 </RelativeLayout>
