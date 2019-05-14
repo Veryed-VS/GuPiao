@@ -21,6 +21,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -42,18 +45,33 @@ public class MaHouActivity extends AppCompatActivity {
     private ArrayList<SharesBean> allSharesBeans = new ArrayList<>();
     private int index = 0;
     private ArrayList<KLineEntity> entity_1, entity_2;
-    private TextView name_1, name_2;
+    private TextView name_1, name_2,titleText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mahou);
 
+        EventBus.getDefault().register(this);
+
         chartView_1 = findViewById(R.id.kchart_view_1);
+        chartView_1.setRefreshListener(new KChartView.KChartRefreshListener() {
+            @Override
+            public void onLoadMoreBegin(KChartView chart) {
+                chartView_1.refreshEnd();
+            }
+        });
         chartView_2 = findViewById(R.id.kchart_view_2);
+        chartView_2.setRefreshListener(new KChartView.KChartRefreshListener() {
+            @Override
+            public void onLoadMoreBegin(KChartView chart) {
+                chartView_2.refreshEnd();
+            }
+        });
 
         name_1 = findViewById(R.id.name_1);
         name_2 = findViewById(R.id.name_2);
+        titleText = findViewById(R.id.title_textView);
 
         findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,9 +96,9 @@ public class MaHouActivity extends AppCompatActivity {
                             Looper.prepare();
                             SharesBean bean_1 = allSharesBeans.get(index * 2);
                             SharesBean bean_2 = allSharesBeans.get(index * 2 + 1);
-                            entity_1 = getHistoryData(bean_1.getCode(), bean_1.mode);
+                            entity_1 = getHistoryData(bean_1);
                             DataHelper.calculate(entity_1);
-                            entity_2 = getHistoryData(bean_2.getCode(), bean_2.mode);
+                            entity_2 = getHistoryData(bean_2);
                             DataHelper.calculate(entity_2);
                             allHandler.sendMessage(new Message());
                         } catch (IOException e) {
@@ -109,9 +127,9 @@ public class MaHouActivity extends AppCompatActivity {
                             Looper.prepare();
                             SharesBean bean_1 = allSharesBeans.get(index * 2);
                             SharesBean bean_2 = allSharesBeans.get(index * 2 + 1);
-                            entity_1 = getHistoryData(bean_1.getCode(), bean_1.mode);
+                            entity_1 = getHistoryData(bean_1);
                             DataHelper.calculate(entity_1);
-                            entity_2 = getHistoryData(bean_2.getCode(), bean_2.mode);
+                            entity_2 = getHistoryData(bean_2);
                             DataHelper.calculate(entity_2);
                             allHandler.sendMessage(new Message());
                         } catch (IOException e) {
@@ -124,9 +142,8 @@ public class MaHouActivity extends AppCompatActivity {
             }
         });
 
-        progressDialog = new MaterialDialog.Builder(MaHouActivity.this)
-                .content("获取数据中...")
-                .progress(true, 0)
+        progressDialog = new MaterialDialog.Builder(MaHouActivity.this).title("分析进度")
+                .progress(false, 100, true)
                 .canceledOnTouchOutside(false)
                 .cancelable(false)
                 .show();
@@ -139,9 +156,9 @@ public class MaHouActivity extends AppCompatActivity {
                     getAllSharesData();
                     SharesBean bean_1 = allSharesBeans.get(index * 2);
                     SharesBean bean_2 = allSharesBeans.get(index * 2 + 1);
-                    entity_1 = getHistoryData(bean_1.getCode(), bean_1.mode);
+                    entity_1 = getHistoryData(bean_1);
                     DataHelper.calculate(entity_1);
-                    entity_2 = getHistoryData(bean_2.getCode(), bean_2.mode);
+                    entity_2 = getHistoryData(bean_2);
                     DataHelper.calculate(entity_2);
                     allHandler.sendMessage(new Message());
                 } catch (IOException e) {
@@ -155,23 +172,37 @@ public class MaHouActivity extends AppCompatActivity {
         }.start();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void busMessageEventBus(ProgressBean bean) {
+        progressDialog.setMaxProgress(bean.getMax());
+        progressDialog.setProgress(bean.getProgress());
+    }
+
     //全部股票获取完毕
     private Handler allHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             KChartAdapter mAdapter_1 = new KChartAdapter(entity_1);
             chartView_1.setAdapter(mAdapter_1);
-            chartView_1.setGridRows(4);
-            chartView_1.setGridColumns(4);
+            chartView_1.setGridRows(5);
+            chartView_1.setGridColumns(5);
             SharesBean bean_1 = allSharesBeans.get(index * 2);
             name_1.setText(bean_1.name + "    " + bean_1.code);
 
             KChartAdapter mAdapter_2 = new KChartAdapter(entity_2);
             chartView_2.setAdapter(mAdapter_2);
-            chartView_2.setGridRows(4);
-            chartView_2.setGridColumns(4);
+            chartView_2.setGridRows(5);
+            chartView_2.setGridColumns(5);
             SharesBean bean_2 = allSharesBeans.get(index * 2 + 1);
             name_2.setText(bean_2.name + "    " + bean_2.code);
+
+            titleText.setText("马后炮捉妖"+"("+allSharesBeans.size()/2+")"+index);
 
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
@@ -180,7 +211,6 @@ public class MaHouActivity extends AppCompatActivity {
     };
 
     private void getAllSharesData() throws IOException, JSONException {
-        allSharesBeans.clear();
         HttpClient httpClient1 = new DefaultHttpClient();
 
         HttpGet httpGet = new HttpGet(DataTools.ALL_CODE_URL);
@@ -207,6 +237,11 @@ public class MaHouActivity extends AppCompatActivity {
         String userJson = node.get("data").toString();
         JSONArray jsonArray = new JSONArray(userJson);
         int arrayLength = jsonArray.length();
+
+        ArrayList<SharesBean> zhangArray = new ArrayList<>();
+        ArrayList<SharesBean> starArray = new ArrayList<>();
+        ArrayList<SharesBean> cuiziArray = new ArrayList<>();
+
         //模式,代码,名称,当前价格,主力流入净占比,今日主力排行,今日涨幅,5日主力流入净占比,5日主力排行,5日涨幅,10日主力流入净占比,10日主力排行,10日涨幅,行业
         for (int i = 0; i < arrayLength; i++) {
             String jsonStr = jsonArray.get(i).toString();
@@ -241,39 +276,70 @@ public class MaHouActivity extends AppCompatActivity {
             if (currentWave <= -3) {
                 continue;
             }
+
+            EventBus.getDefault().post(new ProgressBean(arrayLength, i));
+
             int mode = Integer.valueOf(sharesStr[0].replace("\"", "")) - 1;
             SharesBean bean = new SharesBean(sharesStr[1], sharesStr[2], mode);
-            allSharesBeans.add(bean);
+
+            HttpClient httpClient2 = new DefaultHttpClient();
+            //名称   开盘价   前收盘价   当前价格   最高价   最低价    未知   未知   成交量   成交额
+            HttpGet httpGet1 = new HttpGet(DataTools.getSHARES_PAN_URL(sharesStr[1]));
+            HttpResponse httpResponse1 = httpClient2.execute(httpGet1);
+            HttpEntity httpEntity1 = httpResponse1.getEntity();
+            if (httpEntity1 == null) {
+                continue;
+            }
+            InputStream is1 = httpEntity1.getContent();
+            // 转换为字节输入流
+            BufferedReader br1 = new BufferedReader(new InputStreamReader(is1, "utf-8"));
+            StringBuffer buffer1 = new StringBuffer();
+            String line1;
+            while ((line1 = br1.readLine()) != null) {
+                buffer1.append(line1);
+            }
+            String[] line_data = buffer1.toString().split(",");
+            float open = Float.valueOf(line_data[1]);
+            float close = Float.valueOf(line_data[3]);
+            float height = Float.valueOf(line_data[4]);
+            float low = Float.valueOf(line_data[5]);
+            long number = Long.parseLong(line_data[8]);
+            String dataStr = line_data[30];
+
+            bean.close =close;
+            bean.dataStr = dataStr;
+            bean.height=height;
+            bean.open = open;
+            bean.low = low;
+            bean.number = number;
+
+            if(currentWave > 5){
+                zhangArray.add(bean);
+            }else if(height == close && low == open){
+                //光头光脚
+                cuiziArray.add(bean);
+            }else if (open == low) {
+                //光脚倒锤子
+                cuiziArray.add(bean);
+            } else if (((height - close) >= (close - open)) && ((height - close) > 2 * (open - low))) {
+                //倒锤子
+                cuiziArray.add(bean);
+            }else{
+                float maxMinDiff = Math.abs(height - low);
+                float openCloseDiff = Math.abs(open - close);
+                if((openCloseDiff == 0 && maxMinDiff/open < 0.01) || maxMinDiff / openCloseDiff >= 4){
+                    starArray.add(bean);
+                }
+            }
         }
+        allSharesBeans.addAll(zhangArray);
+        allSharesBeans.addAll(cuiziArray);
+        allSharesBeans.addAll(starArray);
     }
 
-    private ArrayList<KLineEntity> getHistoryData(String code, int mode) throws IOException, ParseException {
-        HttpClient httpClient2 = new DefaultHttpClient();
-        //名称   开盘价   前收盘价   当前价格   最高价   最低价    未知   未知   成交量   成交额
-        HttpGet httpGet1 = new HttpGet(DataTools.getSHARES_PAN_URL(code));
-        HttpResponse httpResponse1 = httpClient2.execute(httpGet1);
-        HttpEntity httpEntity1 = httpResponse1.getEntity();
-        if (httpEntity1 == null) {
-            return new ArrayList<>();
-        }
-        InputStream is1 = httpEntity1.getContent();
-        // 转换为字节输入流
-        BufferedReader br1 = new BufferedReader(new InputStreamReader(is1, "utf-8"));
-        StringBuffer buffer1 = new StringBuffer();
-        String line1;
-        while ((line1 = br1.readLine()) != null) {
-            buffer1.append(line1);
-        }
-        String[] line_data = buffer1.toString().split(",");
-        float open = Float.valueOf(line_data[1]);
-        float close = Float.valueOf(line_data[3]);
-        float height = Float.valueOf(line_data[4]);
-        float low = Float.valueOf(line_data[5]);
-        long number = Long.parseLong(line_data[8]);
-        String dataStr = line_data[30];
-
+    private ArrayList<KLineEntity> getHistoryData(SharesBean bean) throws IOException, ParseException {
         HttpClient httpClient3 = new DefaultHttpClient();
-        HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(mode, code, 360));
+        HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(bean.mode, bean.code, 120));
         HttpResponse httpResponse2 = httpClient3.execute(httpGet2);
         HttpEntity httpEntity2 = httpResponse2.getEntity();
         if (httpEntity2 == null) {
@@ -316,14 +382,14 @@ public class MaHouActivity extends AppCompatActivity {
         }
         //翻转数据
         Collections.reverse(entities);
-        if (!dataStr.equals(entities.get(0).Date)) {
+        if (!bean.dataStr.equals(entities.get(entities.size()-1).Date)) {
             KLineEntity entity = new KLineEntity();
-            entity.High = height;
-            entity.Close = close;
-            entity.Low = low;
-            entity.Open = open;
-            entity.Date = dataStr;
-            entity.Volume = number;
+            entity.High = bean.height;
+            entity.Close = bean.close;
+            entity.Low = bean.low;
+            entity.Open = bean.open;
+            entity.Date = bean.dataStr;
+            entity.Volume = bean.number;
             entities.add(entity);
         }
         //加入模拟数据
@@ -352,24 +418,20 @@ public class MaHouActivity extends AppCompatActivity {
     private class SharesBean {
         private String code;   //代码
         private String name;   //名称
+
+        private float open;    //开盘价
+        private float close;   //收盘价
+        private float height;  //最高价
+        private float low;     //最低价
+        private long number;   //成交量
+        private String dataStr;//当前日期
+
         private int mode;
 
         public SharesBean(String code, String name, int mode) {
             this.code = code;
             this.name = name;
             this.mode = mode;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getMode() {
-            return mode;
         }
     }
 }
