@@ -282,79 +282,85 @@ public class BoDuanActivity extends AppCompatActivity {
             String dataStr = line_data[30];
 
             if (open == low) {
-                //光脚倒锤子
-                if ((height - close) >= (close - open)) {
+                if (height == close) {
+                    //光头光脚
+                    AllSharesBean allSharesBean = new AllSharesBean();
+                    allSharesBean.setCode(sharesStr[1]);
+                    allSharesBean.setName(sharesStr[2]);
+                    allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
+                    resultList.add(allSharesBean);
+                } else {
+                    //光脚倒锤子
                     AllSharesBean allSharesBean = new AllSharesBean();
                     allSharesBean.setCode(sharesStr[1]);
                     allSharesBean.setName(sharesStr[2]);
                     allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
                     resultList.add(allSharesBean);
                 }
-            } else if (close > open) {
+            } else if (((height - close) >= (close - open)) && ((height - close) > 2 * (open - low))) {
                 //倒锤子
-                if (((height - close) >= (close - open)) && ((height - close) > 2 * (open - low))) {
-                    AllSharesBean allSharesBean = new AllSharesBean();
-                    allSharesBean.setCode(sharesStr[1]);
-                    allSharesBean.setName(sharesStr[2]);
-                    allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
-                    resultList.add(allSharesBean);
-                } else if ((close - open) / old >= 0.03) {
-                    //涨幅实体大于3   十字星后涨了3%
-                    int mode = Integer.valueOf(sharesStr[0].replace("\"", "")) - 1;
-                    HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(mode, code, 15));
-                    HttpResponse httpResponse2 = httpClient3.execute(httpGet2);
-                    HttpEntity httpEntity2 = httpResponse2.getEntity();
-                    if (httpEntity2 == null) {
+                AllSharesBean allSharesBean = new AllSharesBean();
+                allSharesBean.setCode(sharesStr[1]);
+                allSharesBean.setName(sharesStr[2]);
+                allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
+                resultList.add(allSharesBean);
+            } else if ((close - open) / old >= 0.03) {
+                //涨幅实体大于3   十字星后涨了3%
+                int mode = Integer.valueOf(sharesStr[0].replace("\"", "")) - 1;
+                HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(mode, code, 15));
+                HttpResponse httpResponse2 = httpClient3.execute(httpGet2);
+                HttpEntity httpEntity2 = httpResponse2.getEntity();
+                if (httpEntity2 == null) {
+                    continue;
+                }
+                InputStream is2 = httpEntity2.getContent();
+                BufferedReader br2 = new BufferedReader(new InputStreamReader(is2, "utf-8"));
+                br2.readLine(); // 第一行信息，为标题信息
+                String lineStr;
+                ArrayList<SharesBean> sharesBeans = new ArrayList<>();
+                for (int a = 0; (lineStr = br2.readLine()) != null && a < 6; a++) {
+                    String line_item[] = lineStr.split(",");// CSV格式文件为逗号分隔符文件
+                    boolean isError = false;
+                    for (int j = 0; j < line_item.length; j++) {
+                        if (line_item[j].equals("None") || line_item[j].equals("-")) {
+                            isError = true;
+                        }
+                    }
+                    if (isError) {
                         continue;
                     }
-                    InputStream is2 = httpEntity2.getContent();
-                    BufferedReader br2 = new BufferedReader(new InputStreamReader(is2, "utf-8"));
-                    br2.readLine(); // 第一行信息，为标题信息
-                    String lineStr;
-                    ArrayList<SharesBean> sharesBeans = new ArrayList<>();
-                    for (int a = 0; (lineStr = br2.readLine()) != null && a < 6; a++) {
-                        String line_item[] = lineStr.split(",");// CSV格式文件为逗号分隔符文件
-                        boolean isError = false;
-                        for (int j = 0; j < line_item.length; j++) {
-                            if (line_item[j].equals("None") || line_item[j].equals("-")) {
-                                isError = true;
-                            }
-                        }
-                        if (isError) {
-                            continue;
-                        }
-                        //日期 股票代码 名称 收盘价 最高价 最低价 开盘价 前收盘 涨跌幅 成交量
-                        String old_date = line_item[0];
-                        float old_open = Float.valueOf(line_item[6]);     // 开盘价
-                        float old_close = Float.valueOf(line_item[3]);    // 收盘价
-                        float old_height = Float.valueOf(line_item[4]);   // 最高价
-                        float old_low = Float.valueOf(line_item[5]);      // 最低价
-                        float old_old_close = Float.valueOf(line_item[7]);// 前收盘
+                    //日期 股票代码 名称 收盘价 最高价 最低价 开盘价 前收盘 涨跌幅 成交量
+                    String old_date = line_item[0];
+                    float old_open = Float.valueOf(line_item[6]);     // 开盘价
+                    float old_close = Float.valueOf(line_item[3]);    // 收盘价
+                    float old_height = Float.valueOf(line_item[4]);   // 最高价
+                    float old_low = Float.valueOf(line_item[5]);      // 最低价
+                    float old_old_close = Float.valueOf(line_item[7]);// 前收盘
 
-                        SharesBean sharesBean = new SharesBean(old_date,old_open, old_close, old_height, old_low, old_old_close);
-                        sharesBeans.add(sharesBean);
+                    SharesBean sharesBean = new SharesBean(old_date, old_open, old_close, old_height, old_low, old_old_close);
+                    sharesBeans.add(sharesBean);
+                }
+                SharesBean old_sharesBean;
+                if (dataStr.equals(sharesBeans.get(0).getDate())) {
+                    old_sharesBean = sharesBeans.get(1);
+                } else {
+                    old_sharesBean = sharesBeans.get(0);
+                }
+                float maxMinDiff = Math.abs(old_sharesBean.getHeight() - old_sharesBean.getLow());
+                float openCloseDiff = Math.abs(old_sharesBean.getOpen() - old_sharesBean.getClose());
+                if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
+                    //不要跳空开
+                    if (open / old_sharesBean.getClose() > 0.015) {
+                        continue;
                     }
-                    SharesBean old_sharesBean;
-                    if (dataStr.equals(sharesBeans.get(0).getDate())) {
-                        old_sharesBean = sharesBeans.get(1);
-                    } else {
-                        old_sharesBean = sharesBeans.get(0);
-                    }
-                    float maxMinDiff = Math.abs(old_sharesBean.getHeight() - old_sharesBean.getLow());
-                    float openCloseDiff = Math.abs(old_sharesBean.getOpen() - old_sharesBean.getClose());
-                    if (openCloseDiff == 0 || maxMinDiff / openCloseDiff >= 4) {
-                        //不要跳空开
-                        if(open/old_sharesBean.getClose()> 0.015){
-                            continue;
-                        }
-                        AllSharesBean allSharesBean = new AllSharesBean();
-                        allSharesBean.setCode(sharesStr[1]);
-                        allSharesBean.setName(sharesStr[2]);
-                        allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
-                        resultList.add(allSharesBean);
-                    }
+                    AllSharesBean allSharesBean = new AllSharesBean();
+                    allSharesBean.setCode(sharesStr[1]);
+                    allSharesBean.setName(sharesStr[2]);
+                    allSharesBean.setRank(Integer.valueOf(sharesStr[11]));
+                    resultList.add(allSharesBean);
                 }
             }
+
         }
         Collections.sort(resultList, new Comparator<AllSharesBean>() {
             @Override
@@ -372,7 +378,7 @@ public class BoDuanActivity extends AppCompatActivity {
         private float low;     //最低价
         private float old;     //前收盘
 
-        public SharesBean(String date,float open, float close, float height, float low, float old) {
+        public SharesBean(String date, float open, float close, float height, float low, float old) {
             this.date = date;
             this.open = open;
             this.close = close;

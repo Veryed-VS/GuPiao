@@ -45,7 +45,7 @@ public class MaHouActivity extends AppCompatActivity {
     private ArrayList<SharesBean> allSharesBeans = new ArrayList<>();
     private int index = 0;
     private ArrayList<KLineEntity> entity_1, entity_2;
-    private TextView name_1, name_2,titleText;
+    private TextView name_1, name_2, titleText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -202,7 +202,7 @@ public class MaHouActivity extends AppCompatActivity {
             SharesBean bean_2 = allSharesBeans.get(index * 2 + 1);
             name_2.setText(bean_2.name + "    " + bean_2.code);
 
-            titleText.setText("马后炮捉妖"+"("+allSharesBeans.size()/2+")"+index);
+            titleText.setText("马后炮捉妖" + "(" + allSharesBeans.size() / 2 + ")" + index);
 
             if (progressDialog != null && progressDialog.isShowing()) {
                 progressDialog.dismiss();
@@ -238,9 +238,9 @@ public class MaHouActivity extends AppCompatActivity {
         JSONArray jsonArray = new JSONArray(userJson);
         int arrayLength = jsonArray.length();
 
-        ArrayList<SharesBean> zhangArray = new ArrayList<>();
         ArrayList<SharesBean> starArray = new ArrayList<>();
         ArrayList<SharesBean> cuiziArray = new ArrayList<>();
+        ArrayList<SharesBean> guangArray = new ArrayList<>();
 
         //模式,代码,名称,当前价格,主力流入净占比,今日主力排行,今日涨幅,5日主力流入净占比,5日主力排行,5日涨幅,10日主力流入净占比,10日主力排行,10日涨幅,行业
         for (int i = 0; i < arrayLength; i++) {
@@ -273,7 +273,7 @@ public class MaHouActivity extends AppCompatActivity {
                 continue;
             }
             float currentWave = Float.valueOf(sharesStr[6]);
-            if (currentWave <= -3) {
+            if (currentWave <= -3 || currentWave > 8) {
                 continue;
             }
 
@@ -306,40 +306,44 @@ public class MaHouActivity extends AppCompatActivity {
             long number = Long.parseLong(line_data[8]);
             String dataStr = line_data[30];
 
-            bean.close =close;
+            bean.close = close;
             bean.dataStr = dataStr;
-            bean.height=height;
+            bean.height = height;
             bean.open = open;
             bean.low = low;
             bean.number = number;
-
-            if(currentWave > 5){
-                zhangArray.add(bean);
-            }else if(height == close && low == open){
-                //光头光脚
-                cuiziArray.add(bean);
-            }else if (open == low) {
-                //光脚倒锤子
-                cuiziArray.add(bean);
-            } else if (((height - close) >= (close - open)) && ((height - close) > 2 * (open - low))) {
-                //倒锤子
-                cuiziArray.add(bean);
-            }else{
+            if ((close - open) / open >= 0.015) {
+                //实体涨1.5
+                if (height == close && low == open) {
+                    //光头光脚
+                    guangArray.add(bean);
+                } else if ((Math.abs(open - low) / open <= 0.005) && (Math.abs(height - close) / open <= 0.005)) {
+                    guangArray.add(bean);
+                }
+            } else if (currentWave > 0 && close > open) {
+                if (open == low || (Math.abs(open - low) / open <= 0.003)) {
+                    //光脚倒锤子
+                    guangArray.add(bean);
+                } else if (((height - close) >= (close - open)) && ((height - close) > 2 * (open - low))) {
+                    //倒锤子
+                    cuiziArray.add(bean);
+                }
+            } else {
                 float maxMinDiff = Math.abs(height - low);
                 float openCloseDiff = Math.abs(open - close);
-                if((openCloseDiff == 0 && maxMinDiff/open < 0.01) || maxMinDiff / openCloseDiff >= 4){
+                if ((openCloseDiff == 0 && maxMinDiff / open < 0.01) || maxMinDiff / openCloseDiff >= 4) {
                     starArray.add(bean);
                 }
             }
         }
-        allSharesBeans.addAll(zhangArray);
+        allSharesBeans.addAll(guangArray);
         allSharesBeans.addAll(cuiziArray);
         allSharesBeans.addAll(starArray);
     }
 
     private ArrayList<KLineEntity> getHistoryData(SharesBean bean) throws IOException, ParseException {
         HttpClient httpClient3 = new DefaultHttpClient();
-        HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(bean.mode, bean.code, 120));
+        HttpGet httpGet2 = new HttpGet(DataTools.getSHARES_OLD_URL(bean.mode, bean.code, 180));
         HttpResponse httpResponse2 = httpClient3.execute(httpGet2);
         HttpEntity httpEntity2 = httpResponse2.getEntity();
         if (httpEntity2 == null) {
@@ -382,7 +386,7 @@ public class MaHouActivity extends AppCompatActivity {
         }
         //翻转数据
         Collections.reverse(entities);
-        if (!bean.dataStr.equals(entities.get(entities.size()-1).Date)) {
+        if (!bean.dataStr.equals(entities.get(entities.size() - 1).Date)) {
             KLineEntity entity = new KLineEntity();
             entity.High = bean.height;
             entity.Close = bean.close;
@@ -396,7 +400,7 @@ public class MaHouActivity extends AppCompatActivity {
         for (int i = 0; i < 3; i++) {
             KLineEntity entity = new KLineEntity();
             KLineEntity old_entity = entities.get(entities.size() - 1);
-            entity.Volume = Math.abs(old_entity.Volume*1.5f);
+            entity.Volume = Math.abs(old_entity.Volume * 1.5f);
             entity.Open = old_entity.Close;
             entity.Close = old_entity.Close * 1.1f;
             entity.Low = old_entity.Close;

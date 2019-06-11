@@ -29,14 +29,10 @@ public class PearsonCorrelation {
             lowData_2[i] = shares.getLow();
         }
 
-        //拿到两个数据的平均值
         float open_data_1_means = getMeans(openData_1);
         float open_data_2_means = getMeans(openData_2);
-        //计算皮尔逊系数的分子
         float open_data_numerator = generateNumerator(openData_1, openData_2, open_data_1_means, open_data_2_means);
-        //计算皮尔逊系数的分母
         float open_data_denominator = generateDenomiator(openData_1, openData_2, open_data_1_means, open_data_2_means);
-        //计算皮尔逊系数
         float open_pearson_number = open_data_numerator / open_data_denominator;
 
         float close_data_1_means = getMeans(closeData_1);
